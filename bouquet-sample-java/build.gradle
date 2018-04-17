@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath "com.quanturium.bouquet:bouquet-plugin:0.0.1"
+    }
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+apply plugin: 'application'
+apply plugin: 'com.quanturium.bouquet'
+
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+// Enable or disable Bouquet. By default enabled=true
+bouquet {
+    enabled = true
+}
+
+dependencies {
+    implementation "io.reactivex.rxjava2:rxjava:2.1.12"
+}
+
+mainClassName = "com.quanturium.bouquet.java.sample.Main"

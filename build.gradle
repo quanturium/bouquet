@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$androidBuildToolsVersion"
+        classpath "org.aspectj:aspectjtools:$aspectjVersion"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:$androidMavenVersion"
+        classpath "com.novoda:bintray-release:$novodaBintrayVersion"
+    }
+}
+
+subprojects {
+    repositories {
+        mavenLocal()
+        jcenter()
+        google()
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = project.gradleVersion
+}
+
+task cleanSampleAndroid(type: Exec) {
+    executable = '../gradlew'
+    workingDir = project.file('bouquet-sample-android')
+    args = [ 'clean' ]
+}
+
+task installSampleAndroid(type: Exec) {
+    executable = '../gradlew'
+    workingDir = project.file('bouquet-sample-android')
+    args = [ 'installDebug' ]
+}
+
+task cleanSampleJava(type: Exec) {
+    executable = '../gradlew'
+    workingDir = project.file('bouquet-sample-java')
+    args = [ 'clean' ]
+}
+
+task runSampleJava(type: Exec) {
+    executable = '../gradlew'
+    workingDir = project.file('bouquet-sample-java')
+    args = [ 'run' ]
+}

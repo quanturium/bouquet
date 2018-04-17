@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">bouquet-sample-android</string>
+    <string name="run_example">Run example</string>
+</resources>

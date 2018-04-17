@@ -1,0 +1,48 @@
+apply plugin: 'com.novoda.bintray-release'
+
+ext {
+
+    travisRepoSlug = System.getenv('TRAVIS_REPO_SLUG')
+    travisPullRequest = System.getenv('TRAVIS_PULL_REQUEST')
+    travisTag = System.getenv('TRAVIS_TAG')
+
+    bintrayUser = System.getenv('BINTRAY_USER')
+    bintrayKey = System.getenv('BINTRAY_KEY')
+}
+
+project.version = travisTag ?: project.version
+
+task ci {
+
+    if (travisRepoSlug != project.repoSlog) {
+        doLast {
+            println("Skipping snapshot deployment: wrong repository. Expected '$project.repoSlog' but was '$travisRepoSlug'.")
+        }
+    } else if (travisPullRequest != "false") {
+        doLast {
+            println("Skipping snapshot deployment: was pull request.")
+        }
+    } else if (travisTag == null || travisTag == '') {
+        doLast {
+            println("Skipping snapshot deployment: tag not set as x.y.z but was '$travisTag'.")
+        }
+    } else if (bintrayUser == null || bintrayKey == null) {
+        doLast {
+            println("Skipping snapshot deployment: bintray credentials not set.")
+        }
+    } else {
+        dependsOn 'bintrayUpload'
+    }
+}
+
+publish {
+    userOrg = project.user
+    groupId = project.group
+    artifactId = project.artifactId
+    publishVersion = project.version
+    desc = ''
+    website = project.website
+    bintrayUser = bintrayUser
+    bintrayKey = bintrayKey
+    dryRun = false
+}
