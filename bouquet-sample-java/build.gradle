@@ -1,11 +1,16 @@
 buildscript {
+
+    def props = new Properties()
+    file("../gradle.properties").withInputStream { props.load(it) }
+    props.each { prop -> project.ext.set(prop.key, prop.value) }
+
     repositories {
         mavenLocal()
         jcenter()
         google()
     }
     dependencies {
-        classpath "com.quanturium.bouquet:bouquet-plugin:0.0.1"
+        classpath "com.quanturium.bouquet:bouquet-plugin:$project.ext.version"
     }
 }
 
@@ -26,7 +31,7 @@ bouquet {
 }
 
 dependencies {
-    implementation "io.reactivex.rxjava2:rxjava:2.1.12"
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 }
 
 mainClassName = "com.quanturium.bouquet.java.sample.Main"

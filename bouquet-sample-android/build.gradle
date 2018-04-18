@@ -1,11 +1,16 @@
 buildscript {
+
+    def props = new Properties()
+    file("../gradle.properties").withInputStream { props.load(it) }
+    props.each { prop -> project.ext.set(prop.key, prop.value) }
+
     repositories {
         mavenLocal()
         jcenter()
         google()
     }
     dependencies {
-        classpath "com.quanturium.bouquet:bouquet-plugin:0.0.1"
+        classpath "com.quanturium.bouquet:bouquet-plugin:$project.ext.version"
     }
 }
 
@@ -24,9 +29,9 @@ bouquet {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:27.1.1"
-    implementation "io.reactivex.rxjava2:rxjava:2.1.12"
-    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 }
 
 android {

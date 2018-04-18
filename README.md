@@ -19,7 +19,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.quanturium.bouquet:bouquet-plugin:1.0.0'
+    classpath 'com.quanturium.bouquet:bouquet-plugin:1.0.1'
   }
 }
 
