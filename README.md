@@ -27,7 +27,7 @@ apply plugin: 'com.quanturium.bouquet'
 
 // Enable or disable Bouquet. By default enabled=true
 bouquet {
-  enabled false
+  enabled true
 }
 ```
 
