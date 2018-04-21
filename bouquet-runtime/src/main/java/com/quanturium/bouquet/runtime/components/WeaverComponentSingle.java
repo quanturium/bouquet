@@ -42,10 +42,6 @@ class WeaverComponentSingle extends WeaverComponentAbstract<Single> {
 					stopWatch.start();
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
 						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.SUBSCRIBE);
-
-					if (getRxComponentInfo().observeOnThread() == null) {
-						getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
-					}
 				})
 				.doOnEvent((value, throwable) -> {
 					if (value != null)
@@ -67,6 +63,7 @@ class WeaverComponentSingle extends WeaverComponentAbstract<Single> {
 					stopWatch.stop();
 					getRxComponentInfo().setTotalExecutionTime(stopWatch.getElapsedTime());
 					getRxComponentInfo().setTotalEmittedItems(emittedItems.get());
+					getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
 
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.SUMMARY)
 						getMessageManager().printSummary(getRxComponentInfo());

@@ -40,10 +40,6 @@ class WeaverComponentCompletable extends WeaverComponentAbstract<Completable> {
 					stopWatch.start();
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
 						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.SUBSCRIBE);
-
-					if (getRxComponentInfo().observeOnThread() == null) {
-						getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
-					}
 				})
 				.doOnComplete(() -> {
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
@@ -60,6 +56,7 @@ class WeaverComponentCompletable extends WeaverComponentAbstract<Completable> {
 				.doFinally(() -> {
 					stopWatch.stop();
 					getRxComponentInfo().setTotalExecutionTime(stopWatch.getElapsedTime());
+					getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
 
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.SUMMARY)
 						getMessageManager().printSummary(getRxComponentInfo());

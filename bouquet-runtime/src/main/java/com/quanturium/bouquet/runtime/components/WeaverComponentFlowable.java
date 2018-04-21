@@ -42,10 +42,6 @@ class WeaverComponentFlowable extends WeaverComponentAbstract<Flowable> {
 					stopWatch.start();
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
 						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.SUBSCRIBE);
-
-					if (getRxComponentInfo().observeOnThread() == null) {
-						getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
-					}
 				})
 				.doOnNext(value -> {
 					emittedItems.increment();
@@ -76,6 +72,7 @@ class WeaverComponentFlowable extends WeaverComponentAbstract<Flowable> {
 					stopWatch.stop();
 					getRxComponentInfo().setTotalExecutionTime(stopWatch.getElapsedTime());
 					getRxComponentInfo().setTotalEmittedItems(emittedItems.get());
+					getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
 
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.SUMMARY)
 						getMessageManager().printSummary(getRxComponentInfo());
