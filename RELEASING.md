@@ -1,11 +1,11 @@
 Releasing
 ==========
 
-1. Update changelog.md
-2. Update readme.md / version in "Setup"
+1. Update changelog.md with version + date + changes
+2. Update version on readme.md / gradle.properties / BouquetPlugin.java 
 3. Commit changes
-4. Add tag x.y.z to commit
+4. Add tag x.y.z to commit. Tag must match updated version number
 5. Push to master
 
-Travis will adjust the version according to the tag and publish to Bintray 
+Travis will publish to Bintray based on the tag 
 

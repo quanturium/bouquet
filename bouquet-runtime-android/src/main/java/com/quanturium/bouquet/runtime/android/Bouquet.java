@@ -63,7 +63,6 @@ public class Bouquet {
 		Annotation annotation = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(RxLogger.class);
 		RxLogger.Scope scope = annotation != null ? ((RxLogger) annotation).value() : RxLogger.Scope.ALL;
 
-		return weaverComponentFactory.build(rxComponent, scope, joinPoint, messageManager).buildRx();
-
+		return weaverComponentFactory.buildWeaverComponent(rxComponent, scope, joinPoint, messageManager).buildRx();
 	}
 }

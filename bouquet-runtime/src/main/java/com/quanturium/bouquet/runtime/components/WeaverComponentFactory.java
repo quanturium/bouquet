@@ -12,22 +12,26 @@ public class WeaverComponentFactory {
 	public WeaverComponentFactory() {
 	}
 
-	public WeaverComponent build(@NonNull RxComponent rxComponent, @NonNull RxLogger.Scope scope, @NonNull ProceedingJoinPoint joinPoint, @NonNull MessageManager messageManager) {
+	public WeaverComponent buildWeaverComponent(@NonNull RxComponent rxComponent, @NonNull RxLogger.Scope scope, @NonNull ProceedingJoinPoint joinPoint, @NonNull MessageManager messageManager) {
 
 		switch (rxComponent) {
 			case FLOWABLE:
-				return new WeaverComponentFlowable(scope, joinPoint, messageManager);
+				return saveAndReturnWeaverComponent(new WeaverComponentFlowable(scope, joinPoint, messageManager));
 			case OBSERVABLE:
-				return new WeaverComponentObservable(scope, joinPoint, messageManager);
+				return saveAndReturnWeaverComponent(new WeaverComponentObservable(scope, joinPoint, messageManager));
 			case SINGLE:
-				return new WeaverComponentSingle(scope, joinPoint, messageManager);
+				return saveAndReturnWeaverComponent(new WeaverComponentSingle(scope, joinPoint, messageManager));
 			case MAYBE:
-				return new WeaverComponentMaybe(scope, joinPoint, messageManager);
+				return saveAndReturnWeaverComponent(new WeaverComponentMaybe(scope, joinPoint, messageManager));
 			case COMPLETABLE:
-				return new WeaverComponentCompletable(scope, joinPoint, messageManager);
+				return saveAndReturnWeaverComponent(new WeaverComponentCompletable(scope, joinPoint, messageManager));
 		}
 
 		return null;
+	}
+
+	private WeaverComponent saveAndReturnWeaverComponent(WeaverComponent weaverComponent) {
+		return weaverComponent;
 	}
 
 }

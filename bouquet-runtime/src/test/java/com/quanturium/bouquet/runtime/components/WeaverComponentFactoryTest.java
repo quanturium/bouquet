@@ -19,11 +19,11 @@ public class WeaverComponentFactoryTest {
 	@Test
 	public void build() {
 
-		assertTrue(weaverComponentFactory.build(RxComponent.OBSERVABLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentObservable);
-		assertTrue(weaverComponentFactory.build(RxComponent.FLOWABLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentFlowable);
-		assertTrue(weaverComponentFactory.build(RxComponent.SINGLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentSingle);
-		assertTrue(weaverComponentFactory.build(RxComponent.MAYBE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentMaybe);
-		assertTrue(weaverComponentFactory.build(RxComponent.COMPLETABLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentCompletable);
+		assertTrue(weaverComponentFactory.buildWeaverComponent(RxComponent.OBSERVABLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentObservable);
+		assertTrue(weaverComponentFactory.buildWeaverComponent(RxComponent.FLOWABLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentFlowable);
+		assertTrue(weaverComponentFactory.buildWeaverComponent(RxComponent.SINGLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentSingle);
+		assertTrue(weaverComponentFactory.buildWeaverComponent(RxComponent.MAYBE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentMaybe);
+		assertTrue(weaverComponentFactory.buildWeaverComponent(RxComponent.COMPLETABLE, RxLogger.Scope.ALL, null, null) instanceof WeaverComponentCompletable);
 
 	}
 }

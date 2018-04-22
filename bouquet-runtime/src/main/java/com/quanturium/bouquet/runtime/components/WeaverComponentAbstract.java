@@ -26,18 +26,22 @@ abstract class WeaverComponentAbstract<T> implements WeaverComponent<T> {
 		return rxComponent;
 	}
 
+	@Override
 	public MessageManager getMessageManager() {
 		return messageManager;
 	}
 
+	@Override
 	public RxComponentInfo getRxComponentInfo() {
 		return rxComponentInfo;
 	}
 
+	@Override
 	public ProceedingJoinPoint getJoinPoint() {
 		return joinPoint;
 	}
 
+	@Override
 	public RxLogger.Scope getScope() {
 		return scope;
 	}

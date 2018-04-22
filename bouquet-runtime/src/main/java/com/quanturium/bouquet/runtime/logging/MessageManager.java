@@ -26,7 +26,7 @@ public class MessageManager {
 		);
 	}
 
-	public <T> void printEvent(RxComponentInfo rxComponentInfo, RxEvent rxEvent) {
+	public void printEvent(RxComponentInfo rxComponentInfo, RxEvent rxEvent) {
 		logger.log(
 				rxComponentInfo.classSimpleName(),
 				new Message.Builder(rxComponentInfo)

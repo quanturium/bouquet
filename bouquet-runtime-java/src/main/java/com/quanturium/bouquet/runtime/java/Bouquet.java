@@ -24,6 +24,7 @@ public final class Bouquet {
 
 	/**
 	 * Enable or disable Bouquet
+	 *
 	 * @param enabled true of false
 	 */
 	public static void setEnabled(boolean enabled) {
@@ -39,6 +40,7 @@ public final class Bouquet {
 
 	/**
 	 * Set a custom logger. By default it uses {@link JavaLogger}
+	 *
 	 * @param logger the new logger implementation
 	 */
 	public static void setLogger(Logger logger) {
@@ -61,6 +63,6 @@ public final class Bouquet {
 		Annotation annotation = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(RxLogger.class);
 		RxLogger.Scope scope = annotation != null ? ((RxLogger) annotation).value() : RxLogger.Scope.ALL;
 
-		return weaverComponentFactory.build(rxComponent, scope, joinPoint, messageManager).buildRx();
+		return weaverComponentFactory.buildWeaverComponent(rxComponent, scope, joinPoint, messageManager).buildRx();
 	}
 }
