@@ -28,6 +28,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
+    variantFilter {
+        if (it.buildType.name.equals('debug')) {
+            it.ignore = true
+        }
+    }
 }
 
 android.libraryVariants.all { variant ->
@@ -70,15 +76,17 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
 }
 
 task javadoc(type: Javadoc) {
-    failOnError false
     source = android.sourceSets.main.java.sourceFiles
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
+}
+
+afterEvaluate {
+    javadoc.classpath += project.android.libraryVariants.toList().first().javaCompile.classpath
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
