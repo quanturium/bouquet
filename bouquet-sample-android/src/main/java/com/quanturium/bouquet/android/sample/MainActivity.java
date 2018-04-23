@@ -7,6 +7,8 @@ import android.widget.Toast;
 import com.quanturium.bouquet.annotations.RxLogger;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
 	@RxLogger(RxLogger.Scope.ALL)
 	private Observable<String> getObservableExample(String extra) {
-		return Observable.just("String 1", "String 2", "String 3", extra);
+		return Observable.just("String 1", "String 2", "String 3", extra)
+				.subscribeOn(Schedulers.io())
+				.doOnNext(s -> System.out.println(Thread.currentThread().getName()))
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 }

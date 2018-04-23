@@ -8,22 +8,34 @@ import org.aspectj.lang.ProceedingJoinPoint;
 abstract class WeaverComponentAbstract<T> implements WeaverComponent<T> {
 
 	private final ProceedingJoinPoint joinPoint;
-	private final RxComponentInfo rxComponentInfo;
+	private final ComponentInfo componentInfo;
 	private final MessageManager messageManager;
-	private final RxComponent rxComponent;
+	private final ComponentType componentType;
 	private final RxLogger.Scope scope;
+	private final Callback callback;
 
-	WeaverComponentAbstract(RxComponent rxComponent, RxLogger.Scope scope, ProceedingJoinPoint joinPoint, MessageManager messageManager) {
-		this.rxComponent = rxComponent;
+	WeaverComponentAbstract(ComponentType componentType, RxLogger.Scope scope, ProceedingJoinPoint joinPoint, MessageManager messageManager, Callback callback) {
+		this.componentType = componentType;
 		this.scope = scope;
-		this.rxComponentInfo = new RxComponentInfo(rxComponent, joinPoint);
+		this.callback = callback;
+		this.componentInfo = new ComponentInfo(componentType, joinPoint);
 		this.joinPoint = joinPoint;
 		this.messageManager = messageManager;
 	}
 
 	@Override
-	public RxComponent getRxComponent() {
-		return rxComponent;
+	public T build() throws Throwable {
+		callback.before(this);
+		T result = buildComponent();
+		callback.after(this);
+		return result;
+	}
+
+	protected abstract T buildComponent() throws Throwable;
+
+	@Override
+	public ComponentType getComponentType() {
+		return componentType;
 	}
 
 	@Override
@@ -32,8 +44,8 @@ abstract class WeaverComponentAbstract<T> implements WeaverComponent<T> {
 	}
 
 	@Override
-	public RxComponentInfo getRxComponentInfo() {
-		return rxComponentInfo;
+	public ComponentInfo getComponentInfo() {
+		return componentInfo;
 	}
 
 	@Override

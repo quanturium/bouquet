@@ -11,17 +11,17 @@ import io.reactivex.Flowable;
 
 class WeaverComponentFlowable extends WeaverComponentAbstract<Flowable> {
 
-	WeaverComponentFlowable(RxLogger.Scope scope, ProceedingJoinPoint proceedingJoinPoint, MessageManager messageManager) {
-		super(RxComponent.OBSERVABLE, scope, proceedingJoinPoint, messageManager);
+	WeaverComponentFlowable(RxLogger.Scope scope, ProceedingJoinPoint proceedingJoinPoint, MessageManager messageManager, Callback callback) {
+		super(ComponentType.OBSERVABLE, scope, proceedingJoinPoint, messageManager, callback);
 	}
 
 	@Override
-	public Flowable buildRx() throws Throwable {
-		return build();
+	public Flowable buildComponent() throws Throwable {
+		return buildComponentInternal();
 	}
 
-	@SuppressWarnings({"unchecked"})
-	private <T> Flowable<T> build() throws Throwable {
+	@SuppressWarnings("unchecked")
+	private <T> Flowable<T> buildComponentInternal() throws Throwable {
 
 		Flowable<T> flowable = (Flowable<T>) getJoinPoint().proceed();
 
@@ -29,7 +29,7 @@ class WeaverComponentFlowable extends WeaverComponentAbstract<Flowable> {
 			return flowable;
 
 		if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.SOURCE)
-			getMessageManager().printSource(getRxComponentInfo());
+			getMessageManager().printSource(getComponentInfo());
 
 		if (getScope() == RxLogger.Scope.SOURCE)
 			return flowable;
@@ -41,41 +41,43 @@ class WeaverComponentFlowable extends WeaverComponentAbstract<Flowable> {
 				.doOnSubscribe(subscription -> {
 					stopWatch.start();
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.SUBSCRIBE);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.SUBSCRIBE);
 				})
 				.doOnNext(value -> {
 					emittedItems.increment();
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.NEXT, value);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.NEXT, value);
 				})
 				.doOnError(throwable -> {
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.ERROR, throwable);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.ERROR, throwable);
 				})
 				.doOnComplete(() -> {
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.COMPLETE);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.COMPLETE);
 				})
 				.doOnTerminate(() -> {
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.TERMINATE);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.TERMINATE);
 				})
 				.doOnRequest(count -> {
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.REQUEST, count);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.REQUEST, count);
 				})
 				.doOnCancel(() -> {
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.CANCEL);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.CANCEL);
 				})
 				.doFinally(() -> {
 					stopWatch.stop();
-					getRxComponentInfo().setTotalExecutionTime(stopWatch.getElapsedTime());
-					getRxComponentInfo().setTotalEmittedItems(emittedItems.get());
-					getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
+					getComponentInfo().setTotalExecutionTime(stopWatch.getElapsedTime());
+					getComponentInfo().setTotalEmittedItems(emittedItems.get());
+					getComponentInfo().setObserveOnThread(Thread.currentThread().getName());
+					if(getComponentInfo().subscribeOnThread() == null)
+						getComponentInfo().setSubscribeOnThread(Thread.currentThread().getName());
 
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.SUMMARY)
-						getMessageManager().printSummary(getRxComponentInfo());
+						getMessageManager().printSummary(getComponentInfo());
 				});
 	}
 }

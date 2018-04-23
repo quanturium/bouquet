@@ -7,15 +7,23 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 public interface WeaverComponent<T> {
 
-	T buildRx() throws Throwable;
+	T build() throws Throwable;
 
-	RxComponent getRxComponent();
+	ComponentType getComponentType();
 
 	MessageManager getMessageManager();
 
-	RxComponentInfo getRxComponentInfo();
+	ComponentInfo getComponentInfo();
 
 	ProceedingJoinPoint getJoinPoint();
 
 	RxLogger.Scope getScope();
+
+	interface Callback {
+
+		void before(WeaverComponent weaverComponent);
+
+		void after(WeaverComponent weaverComponent);
+
+	}
 }

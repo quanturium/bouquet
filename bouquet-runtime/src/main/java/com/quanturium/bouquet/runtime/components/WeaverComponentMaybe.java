@@ -11,17 +11,17 @@ import io.reactivex.Maybe;
 
 class WeaverComponentMaybe extends WeaverComponentAbstract<Maybe> {
 
-	WeaverComponentMaybe(RxLogger.Scope scope, ProceedingJoinPoint proceedingJoinPoint, MessageManager messageManager) {
-		super(RxComponent.OBSERVABLE, scope, proceedingJoinPoint, messageManager);
+	WeaverComponentMaybe(RxLogger.Scope scope, ProceedingJoinPoint proceedingJoinPoint, MessageManager messageManager, Callback callback) {
+		super(ComponentType.OBSERVABLE, scope, proceedingJoinPoint, messageManager, callback);
 	}
 
 	@Override
-	public Maybe buildRx() throws Throwable {
-		return build();
+	public Maybe buildComponent() throws Throwable {
+		return buildComponentInternal();
 	}
 
-	@SuppressWarnings({"unchecked"})
-	private <T> Maybe<T> build() throws Throwable {
+	@SuppressWarnings("unchecked")
+	private <T> Maybe<T> buildComponentInternal() throws Throwable {
 
 		Maybe<T> maybe = (Maybe<T>) getJoinPoint().proceed();
 
@@ -29,7 +29,7 @@ class WeaverComponentMaybe extends WeaverComponentAbstract<Maybe> {
 			return maybe;
 
 		if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.SOURCE)
-			getMessageManager().printSource(getRxComponentInfo());
+			getMessageManager().printSource(getComponentInfo());
 
 		if (getScope() == RxLogger.Scope.SOURCE)
 			return maybe;
@@ -41,33 +41,36 @@ class WeaverComponentMaybe extends WeaverComponentAbstract<Maybe> {
 				.doOnSubscribe(disposable -> {
 					stopWatch.start();
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.SUBSCRIBE);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.SUBSCRIBE);
 				})
 				.doOnEvent((value, throwable) -> {
 					if (value != null)
-						getRxComponentInfo().setTotalEmittedItems(1);
+						emittedItems.increment();
+
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE) {
 						if (value != null) { // success
-							getMessageManager().printEvent(getRxComponentInfo(), RxEvent.SUCCESS, value);
+							getMessageManager().printEvent(getComponentInfo(), RxEvent.SUCCESS, value);
 						} else if (throwable != null) { // error
-							getMessageManager().printEvent(getRxComponentInfo(), RxEvent.ERROR, throwable);
+							getMessageManager().printEvent(getComponentInfo(), RxEvent.ERROR, throwable);
 						} else { // complete without emitting any items
-							getMessageManager().printEvent(getRxComponentInfo(), RxEvent.COMPLETE);
+							getMessageManager().printEvent(getComponentInfo(), RxEvent.COMPLETE);
 						}
 					}
 				})
 				.doOnDispose(() -> {
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.LIFECYCLE)
-						getMessageManager().printEvent(getRxComponentInfo(), RxEvent.DISPOSE);
+						getMessageManager().printEvent(getComponentInfo(), RxEvent.DISPOSE);
 				})
 				.doFinally(() -> {
 					stopWatch.stop();
-					getRxComponentInfo().setTotalExecutionTime(stopWatch.getElapsedTime());
-					getRxComponentInfo().setTotalEmittedItems(emittedItems.get());
-					getRxComponentInfo().setObserveOnThread(Thread.currentThread().getName());
+					getComponentInfo().setTotalExecutionTime(stopWatch.getElapsedTime());
+					getComponentInfo().setTotalEmittedItems(emittedItems.get());
+					getComponentInfo().setObserveOnThread(Thread.currentThread().getName());
+					if(getComponentInfo().subscribeOnThread() == null)
+						getComponentInfo().setSubscribeOnThread(Thread.currentThread().getName());
 
 					if (getScope() == RxLogger.Scope.ALL || getScope() == RxLogger.Scope.SUMMARY)
-						getMessageManager().printSummary(getRxComponentInfo());
+						getMessageManager().printSummary(getComponentInfo());
 				});
 	}
 }

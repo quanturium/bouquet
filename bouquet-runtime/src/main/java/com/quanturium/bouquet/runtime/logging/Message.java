@@ -1,7 +1,7 @@
 package com.quanturium.bouquet.runtime.logging;
 
-import com.quanturium.bouquet.runtime.components.RxComponent;
-import com.quanturium.bouquet.runtime.components.RxComponentInfo;
+import com.quanturium.bouquet.runtime.components.ComponentType;
+import com.quanturium.bouquet.runtime.components.ComponentInfo;
 import com.quanturium.bouquet.runtime.components.RxEvent;
 
 import java.util.List;
@@ -28,29 +28,29 @@ public class Message {
 
 	public static class Builder {
 
-		private final RxComponentInfo rxComponentInfo;
+		private final ComponentInfo componentInfo;
 		private final StringBuilder sb;
 
-		public Builder(RxComponentInfo rxComponentInfo) {
-			this.rxComponentInfo = rxComponentInfo;
+		public Builder(ComponentInfo componentInfo) {
+			this.componentInfo = componentInfo;
 			sb = new StringBuilder(LABEL);
 		}
 
 		public Builder source() {
 			sb.append(MESSAGE_TYPE_SOURCE);
-			sb.append(rxComponentInfo.methodReturnType());
+			sb.append(componentInfo.methodReturnType());
 			sb.append(" ");
-			sb.append(rxComponentInfo.classSimpleName());
+			sb.append(componentInfo.classSimpleName());
 			sb.append(METHOD_SEPARATOR);
-			sb.append(rxComponentInfo.methodName());
+			sb.append(componentInfo.methodName());
 			sb.append("(");
-			List<String> methodParamNames = rxComponentInfo.methodParamNamesList();
+			List<String> methodParamNames = componentInfo.methodParamNamesList();
 			if (methodParamNames != null && !methodParamNames.isEmpty()) {
 				for (int i = 0; i < methodParamNames.size(); i++) {
 					sb.append(methodParamNames.get(i));
 					sb.append("=");
 					sb.append("'");
-					sb.append(String.valueOf(rxComponentInfo.methodParamValuesList().get(i)));
+					sb.append(String.valueOf(componentInfo.methodParamValuesList().get(i)));
 					sb.append("'");
 					if ((i != methodParamNames.size() - 1)) {
 						sb.append(", ");
@@ -63,7 +63,7 @@ public class Message {
 
 		public <T> Builder event(RxEvent rxEvent, T value) {
 			sb.append(MESSAGE_TYPE_EVENT);
-			sb.append(rxComponentInfo.methodName());
+			sb.append(componentInfo.methodName());
 			sb.append(VALUE_SEPARATOR);
 			switch (rxEvent) {
 				case SUBSCRIBE:
@@ -108,23 +108,27 @@ public class Message {
 
 		public Builder summary() {
 			sb.append(MESSAGE_TYPE_SUMMARY);
-			sb.append(rxComponentInfo.methodName());
+			sb.append(componentInfo.methodName());
 			sb.append(VALUE_SEPARATOR);
-			if (rxComponentInfo.rxComponent() != RxComponent.COMPLETABLE) {
+			if (componentInfo.type() != ComponentType.COMPLETABLE) {
 				sb.append("Count: ");
-				sb.append(rxComponentInfo.totalEmittedItems());
-				if (rxComponentInfo.totalEmittedItems() == 1)
+				sb.append(componentInfo.totalEmittedItems());
+				if (componentInfo.totalEmittedItems() == 1)
 					sb.append(" item");
 				else
 					sb.append(" items");
 				sb.append(" | ");
 			}
 			sb.append("Time: ");
-			sb.append(rxComponentInfo.totalExecutionTime());
+			sb.append(componentInfo.totalExecutionTime());
 			sb.append(" ms");
-			if (rxComponentInfo.observeOnThread() != null) {
+			if (componentInfo.subscribeOnThread() != null) {
+				sb.append(" | SubscribeOn: ");
+				sb.append(componentInfo.subscribeOnThread());
+			}
+			if (componentInfo.observeOnThread() != null) {
 				sb.append(" | ObservingOn: ");
-				sb.append(rxComponentInfo.observeOnThread());
+				sb.append(componentInfo.observeOnThread());
 			}
 			return this;
 		}

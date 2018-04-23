@@ -14,45 +14,45 @@ import io.reactivex.Observable;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-public class RxComponentInfoTest {
+public class ComponentInfoTest {
 
 	@Mock
 	ProceedingJoinPoint proceedingJoinPoint;
 	@Mock
 	MethodSignature signature;
 
-	RxComponent rxComponent;
-	RxComponentInfo rxComponentInfo;
+	ComponentType componentType;
+	ComponentInfo componentInfo;
 
 	@Before
 	public void setUp() {
-		rxComponent = RxComponent.OBSERVABLE;
+		componentType = ComponentType.OBSERVABLE;
 		MockitoAnnotations.initMocks(this);
 		when(proceedingJoinPoint.getSignature()).thenReturn(signature);
-		rxComponentInfo = new RxComponentInfo(rxComponent, proceedingJoinPoint);
+		componentInfo = new ComponentInfo(componentType, proceedingJoinPoint);
 	}
 
 	@Test
-	public void rxComponentName() {
-		assertEquals(rxComponentInfo.rxComponent(), RxComponent.OBSERVABLE);
+	public void type() {
+		assertEquals(componentInfo.type(), ComponentType.OBSERVABLE);
 	}
 
 	@Test
 	public void classSimpleName() {
 		when(signature.getDeclaringType()).thenReturn(Observable.class);
-		assertEquals(rxComponentInfo.classSimpleName(), "Observable");
+		assertEquals(componentInfo.classSimpleName(), "Observable");
 	}
 
 	@Test
 	public void classCanonicalName() {
 		when(signature.getDeclaringType()).thenReturn(Observable.class);
-		assertEquals(rxComponentInfo.classCanonicalName(), "io.reactivex.Observable");
+		assertEquals(componentInfo.classCanonicalName(), "io.reactivex.Observable");
 	}
 
 	@Test
 	public void methodName() {
 		when(signature.getName()).thenReturn("methodName");
-		assertEquals(rxComponentInfo.methodName(), "methodName");
+		assertEquals(componentInfo.methodName(), "methodName");
 	}
 
 	@Test
@@ -60,8 +60,8 @@ public class RxComponentInfoTest {
 		Class[] classArray = new Class[]{Object.class};
 
 		when(signature.getParameterTypes()).thenReturn(classArray).thenReturn(null);
-		assertEquals(classArray[0], rxComponentInfo.methodParamTypesList().get(0));
-		assertEquals(0, rxComponentInfo.methodParamTypesList().size());
+		assertEquals(classArray[0], componentInfo.methodParamTypesList().get(0));
+		assertEquals(0, componentInfo.methodParamTypesList().size());
 	}
 
 	@Test
@@ -69,8 +69,8 @@ public class RxComponentInfoTest {
 		String[] nameArray = new String[]{"name"};
 
 		when(signature.getParameterNames()).thenReturn(nameArray).thenReturn(null);
-		assertEquals(nameArray[0], rxComponentInfo.methodParamNamesList().get(0));
-		assertEquals(0, rxComponentInfo.methodParamTypesList().size());
+		assertEquals(nameArray[0], componentInfo.methodParamNamesList().get(0));
+		assertEquals(0, componentInfo.methodParamTypesList().size());
 	}
 
 	@Test
@@ -78,8 +78,8 @@ public class RxComponentInfoTest {
 		Object[] argsArray = new Object[]{"object"};
 
 		when(proceedingJoinPoint.getArgs()).thenReturn(argsArray).thenReturn(null);
-		assertEquals(argsArray[0], rxComponentInfo.methodParamValuesList().get(0));
-		assertEquals(0, rxComponentInfo.methodParamValuesList().size());
+		assertEquals(argsArray[0], componentInfo.methodParamValuesList().get(0));
+		assertEquals(0, componentInfo.methodParamValuesList().size());
 	}
 
 	@Test
@@ -87,35 +87,35 @@ public class RxComponentInfoTest {
 		Method testMethod = getClass().getMethod("testMethod");
 
 		when(signature.getMethod()).thenReturn(testMethod);
-		assertEquals("io.reactivex.Observable", rxComponentInfo.methodReturnType().getTypeName());
+		assertEquals("io.reactivex.Observable", componentInfo.methodReturnType().getTypeName());
 	}
 
 	@Test
 	public void subscribeOnThread() {
 		String s = "threadName";
-		rxComponentInfo.setSubscribeOnThread(s);
-		assertEquals(s, rxComponentInfo.subscribeOnThread());
+		componentInfo.setSubscribeOnThread(s);
+		assertEquals(s, componentInfo.subscribeOnThread());
 	}
 
 	@Test
 	public void observeOnThread() {
 		String s = "threadName";
-		rxComponentInfo.setObserveOnThread(s);
-		assertEquals(s, rxComponentInfo.observeOnThread());
+		componentInfo.setObserveOnThread(s);
+		assertEquals(s, componentInfo.observeOnThread());
 	}
 
 	@Test
 	public void totalExecutionTime() {
 		int total = 10;
-		rxComponentInfo.setTotalExecutionTime(total);
-		assertEquals(total, rxComponentInfo.totalExecutionTime());
+		componentInfo.setTotalExecutionTime(total);
+		assertEquals(total, componentInfo.totalExecutionTime());
 	}
 
 	@Test
 	public void totalEmittedItems() {
 		int total = 10;
-		rxComponentInfo.setTotalEmittedItems(total);
-		assertEquals(total, rxComponentInfo.totalEmittedItems());
+		componentInfo.setTotalEmittedItems(total);
+		assertEquals(total, componentInfo.totalEmittedItems());
 	}
 
 	public Observable testMethod() {

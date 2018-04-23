@@ -6,9 +6,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 dependencies {
+    implementation "org.aspectj:aspectjrt:$aspectjVersion"
     implementation project(':bouquet-annotations')
     implementation project(':bouquet-runtime')
-    implementation "org.aspectj:aspectjrt:$aspectjVersion"
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
@@ -38,15 +38,17 @@ android {
 
 android.libraryVariants.all { variant ->
 
-    //  Compile aspects
-    JavaCompile javaCompile = variant.getJavaCompiler()
+    JavaCompile javaCompile = variant.hasProperty('javaCompiler') ? variant.javaCompiler : variant.javaCompile
+
     javaCompile.doLast {
-        String[] args = ["-showWeaveInfo",
-                         "-1.5",
-                         "-inpath", javaCompile.destinationDir.toString(),
-                         "-aspectpath", javaCompile.classpath.asPath,
-                         "-d", javaCompile.destinationDir.toString(),
-                         "-classpath", javaCompile.classpath.asPath]
+        String[] args = [
+                "-showWeaveInfo",
+                "-1.5",
+                "-inpath", javaCompile.destinationDir.toString(),
+                "-aspectpath", javaCompile.classpath.asPath,
+                "-d", javaCompile.destinationDir.toString(),
+                "-classpath", javaCompile.classpath.asPath
+        ]
 
         final MessageHandler handler = new MessageHandler(true)
         final def log = project.logger
@@ -66,12 +68,6 @@ android.libraryVariants.all { variant ->
                     break
             }
         }
-    }
-}
-
-if (JavaVersion.current().isJava8Compatible()) {
-    tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
 

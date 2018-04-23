@@ -33,11 +33,13 @@ public abstract class BouquetPluginConfig {
 
 	public final void configure() {
 
+		// Create the extension
+		project.getExtensions().create(BOUQUET_EXTENSION, BouquetExtension.class);
+
 		// Adding annotation dependency
 		getProject().getDependencies().add("implementation", "com.quanturium.bouquet:bouquet-annotations:" + BOUQUET_VERSION);
 
-		// Create the extension
-		project.getExtensions().create(BOUQUET_EXTENSION, BouquetExtension.class);
+		getProject().getConfigurations().create("aspectj");
 
 		configurePlugin();
 

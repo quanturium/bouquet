@@ -5,8 +5,8 @@ targetCompatibility = JavaVersion.VERSION_1_8
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-    implementation project(':bouquet-annotations')
     implementation "org.aspectj:aspectjrt:$aspectjVersion"
+    implementation project(':bouquet-annotations')
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"

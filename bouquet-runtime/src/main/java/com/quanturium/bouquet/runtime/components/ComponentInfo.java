@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class RxComponentInfo {
+public class ComponentInfo {
 
-	private final RxComponent rxComponent;
+	private final ComponentType componentType;
 	private final ProceedingJoinPoint joinPoint;
 
 	private String subscribeOnThread;
@@ -18,13 +18,13 @@ public class RxComponentInfo {
 	private long totalExecutionTime;
 	private int totalEmittedItems;
 
-	public RxComponentInfo(RxComponent rxComponent, ProceedingJoinPoint joinPoint) {
-		this.rxComponent = rxComponent;
+	public ComponentInfo(ComponentType componentType, ProceedingJoinPoint joinPoint) {
+		this.componentType = componentType;
 		this.joinPoint = joinPoint;
 	}
 
-	public RxComponent rxComponent() {
-		return rxComponent;
+	public ComponentType type() {
+		return componentType;
 	}
 
 	public String classSimpleName() {

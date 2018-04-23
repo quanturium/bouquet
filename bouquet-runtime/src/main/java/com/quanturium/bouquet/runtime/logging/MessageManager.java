@@ -1,7 +1,7 @@
 package com.quanturium.bouquet.runtime.logging;
 
 import com.quanturium.bouquet.annotations.RxLogger;
-import com.quanturium.bouquet.runtime.components.RxComponentInfo;
+import com.quanturium.bouquet.runtime.components.ComponentInfo;
 import com.quanturium.bouquet.runtime.components.RxEvent;
 
 public class MessageManager {
@@ -16,40 +16,40 @@ public class MessageManager {
 		logger.log(RxLogger.class.getSimpleName(), "RxLogger annotation on wrong return type");
 	}
 
-	public void printSource(RxComponentInfo rxComponentInfo) {
+	public void printSource(ComponentInfo componentInfo) {
 		logger.log(
-				rxComponentInfo.classSimpleName(),
-				new Message.Builder(rxComponentInfo)
+				componentInfo.classSimpleName(),
+				new Message.Builder(componentInfo)
 						.source()
 						.build()
 						.toString()
 		);
 	}
 
-	public void printEvent(RxComponentInfo rxComponentInfo, RxEvent rxEvent) {
+	public void printEvent(ComponentInfo componentInfo, RxEvent rxEvent) {
 		logger.log(
-				rxComponentInfo.classSimpleName(),
-				new Message.Builder(rxComponentInfo)
+				componentInfo.classSimpleName(),
+				new Message.Builder(componentInfo)
 						.event(rxEvent, null)
 						.build()
 						.toString()
 		);
 	}
 
-	public <T> void printEvent(RxComponentInfo rxComponentInfo, RxEvent rxEvent, T value) {
+	public <T> void printEvent(ComponentInfo componentInfo, RxEvent rxEvent, T value) {
 		logger.log(
-				rxComponentInfo.classSimpleName(),
-				new Message.Builder(rxComponentInfo)
+				componentInfo.classSimpleName(),
+				new Message.Builder(componentInfo)
 						.event(rxEvent, value)
 						.build()
 						.toString()
 		);
 	}
 
-	public void printSummary(RxComponentInfo rxComponentInfo) {
+	public void printSummary(ComponentInfo componentInfo) {
 		logger.log(
-				rxComponentInfo.classSimpleName(),
-				new Message.Builder(rxComponentInfo)
+				componentInfo.classSimpleName(),
+				new Message.Builder(componentInfo)
 						.summary()
 						.build()
 						.toString()

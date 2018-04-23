@@ -13,6 +13,7 @@ import io.reactivex.Observable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.verify;
 
 public class WeaverComponentAbstractTest {
 
@@ -22,22 +23,26 @@ public class WeaverComponentAbstractTest {
 	ProceedingJoinPoint proceedingJoinPoint;
 	@Mock
 	MessageManager messageManager;
+	@Mock
+	WeaverComponent.Callback callback;
+	@Mock
+	Observable observable;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		weaverComponent = new WeaverComponentAbstract<Observable>(RxComponent.OBSERVABLE, RxLogger.Scope.ALL, proceedingJoinPoint, messageManager) {
+		weaverComponent = new WeaverComponentAbstract<Observable>(ComponentType.OBSERVABLE, RxLogger.Scope.ALL, proceedingJoinPoint, messageManager, callback) {
 
 			@Override
-			public Observable buildRx() throws Throwable {
-				return null; // NO-OP
+			protected Observable buildComponent() throws Throwable {
+				return observable;
 			}
 		};
 	}
 
 	@Test
 	public void getRxComponent() {
-		assertEquals(RxComponent.OBSERVABLE, weaverComponent.getRxComponent());
+		assertEquals(ComponentType.OBSERVABLE, weaverComponent.getComponentType());
 	}
 
 	@Test
@@ -47,7 +52,7 @@ public class WeaverComponentAbstractTest {
 
 	@Test
 	public void getRxComponentInfo() {
-		assertNotNull(weaverComponent.getRxComponentInfo());
+		assertNotNull(weaverComponent.getComponentInfo());
 	}
 
 	@Test
@@ -58,5 +63,19 @@ public class WeaverComponentAbstractTest {
 	@Test
 	public void getScope() {
 		assertEquals(RxLogger.Scope.ALL, weaverComponent.getScope());
+	}
+
+	@Test
+	public void build() throws Throwable {
+		Observable result = weaverComponent.build();
+
+		verify(callback).before(weaverComponent);
+		verify(callback).after(weaverComponent);
+		assertEquals(observable, result);
+	}
+
+	@Test
+	public void buildComponent() throws Throwable {
+		assertEquals(observable, weaverComponent.buildComponent());
 	}
 }

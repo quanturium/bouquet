@@ -6,14 +6,18 @@ import com.quanturium.bouquet.runtime.logging.MessageManager;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.TestSubscriber;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +27,8 @@ public class WeaverComponentFlowableTest {
 	ProceedingJoinPoint proceedingJoinPoint;
 	@Mock
 	MessageManager messageManager;
+	@Mock
+	WeaverComponent.Callback callback;
 
 	private TestSubscriber observer;
 
@@ -33,94 +39,124 @@ public class WeaverComponentFlowableTest {
 	}
 
 	@Test
-	public void buildRx() throws Throwable {
-		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1));
+	public void build() throws Throwable {
+		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1).delay(10, TimeUnit.MILLISECONDS));
 
-		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.ALL, proceedingJoinPoint, messageManager);
-		Flowable flowable = weaverComponentFlowable.buildRx();
+		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.ALL, proceedingJoinPoint, messageManager, callback);
+		Flowable flowable = weaverComponentFlowable.build();
 
 		flowable.subscribe(observer);
+		observer.awaitTerminalEvent();
 		observer.dispose();
 
 		observer.assertValue(1);
 		observer.assertNoErrors();
 		observer.assertComplete();
+
+		assertNotNull(weaverComponentFlowable.getComponentInfo().observeOnThread());
+		assertNotNull(weaverComponentFlowable.getComponentInfo().subscribeOnThread());
+		assertTrue(weaverComponentFlowable.getComponentInfo().totalExecutionTime() > 0);
+		assertTrue(weaverComponentFlowable.getComponentInfo().totalEmittedItems() > 0);
 	}
 
 	@Test
-	public void buildRxAll() throws Throwable {
+	public void buildAll() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1));
 
-		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.ALL, proceedingJoinPoint, messageManager);
-		Flowable flowable = weaverComponentFlowable.buildRx();
+		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.ALL, proceedingJoinPoint, messageManager, callback);
+		Flowable flowable = weaverComponentFlowable.build();
 
 		flowable.subscribe(observer);
 		observer.dispose();
 
-		verify(messageManager).printSource(weaverComponentFlowable.getRxComponentInfo());
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.SUBSCRIBE);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.REQUEST, Long.MAX_VALUE);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.NEXT, 1);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.CANCEL);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.COMPLETE);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.TERMINATE);
-		verify(messageManager).printSummary(weaverComponentFlowable.getRxComponentInfo());
-		verifyNoMoreInteractions(messageManager);
+		InOrder order = Mockito.inOrder(messageManager);
+		order.verify(messageManager).printSource(weaverComponentFlowable.getComponentInfo());
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.SUBSCRIBE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.REQUEST, Long.MAX_VALUE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.NEXT, 1);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.COMPLETE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.TERMINATE);
+		order.verify(messageManager).printSummary(weaverComponentFlowable.getComponentInfo());
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.CANCEL);
+		order.verifyNoMoreInteractions();
 	}
 
 	@Test
-	public void buildRxSource() throws Throwable {
+	public void buildSource() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1));
 
-		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.SOURCE, proceedingJoinPoint, messageManager);
-		Flowable flowable = weaverComponentFlowable.buildRx();
+		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.SOURCE, proceedingJoinPoint, messageManager, callback);
+		Flowable flowable = weaverComponentFlowable.build();
 
 		flowable.subscribe(observer);
 		observer.dispose();
 
-		verify(messageManager).printSource(weaverComponentFlowable.getRxComponentInfo());
-		verifyNoMoreInteractions(messageManager);
+		InOrder order = Mockito.inOrder(messageManager);
+		order.verify(messageManager).printSource(weaverComponentFlowable.getComponentInfo());
+		order.verifyNoMoreInteractions();
 	}
 
 	@Test
-	public void buildRxLifecycle() throws Throwable {
+	public void buildLifecycle() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1));
 
-		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.LIFECYCLE, proceedingJoinPoint, messageManager);
-		Flowable flowable = weaverComponentFlowable.buildRx();
+		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.LIFECYCLE, proceedingJoinPoint, messageManager, callback);
+		Flowable flowable = weaverComponentFlowable.build();
 
 		flowable.subscribe(observer);
 		observer.dispose();
 
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.SUBSCRIBE);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.REQUEST, Long.MAX_VALUE);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.NEXT, 1);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.CANCEL);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.COMPLETE);
-		verify(messageManager).printEvent(weaverComponentFlowable.getRxComponentInfo(), RxEvent.TERMINATE);
-		verifyNoMoreInteractions(messageManager);
+		InOrder order = Mockito.inOrder(messageManager);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.SUBSCRIBE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.REQUEST, Long.MAX_VALUE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.NEXT, 1);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.COMPLETE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.TERMINATE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.CANCEL);
+		order.verifyNoMoreInteractions();
 	}
 
 	@Test
-	public void buildRxSummary() throws Throwable {
-		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1));
+	public void buildLifecycleWithError() throws Throwable {
+		Exception e = new IllegalStateException();
+		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.error(e));
 
-		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.SUMMARY, proceedingJoinPoint, messageManager);
-		Flowable flowable = weaverComponentFlowable.buildRx();
+		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.LIFECYCLE, proceedingJoinPoint, messageManager, callback);
+		Flowable flowable = weaverComponentFlowable.build();
 
 		flowable.subscribe(observer);
 		observer.dispose();
 
-		verify(messageManager).printSummary(weaverComponentFlowable.getRxComponentInfo());
-		verifyNoMoreInteractions(messageManager);
+		InOrder order = Mockito.inOrder(messageManager);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.SUBSCRIBE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.REQUEST, Long.MAX_VALUE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.ERROR, e);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.TERMINATE);
+		order.verify(messageManager).printEvent(weaverComponentFlowable.getComponentInfo(), RxEvent.CANCEL);
+		order.verifyNoMoreInteractions();
 	}
 
 	@Test
-	public void buildRxNone() throws Throwable {
+	public void buildSummary() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1));
 
-		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.NONE, proceedingJoinPoint, messageManager);
-		Flowable flowable = weaverComponentFlowable.buildRx();
+		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.SUMMARY, proceedingJoinPoint, messageManager, callback);
+		Flowable flowable = weaverComponentFlowable.build();
+
+		flowable.subscribe(observer);
+		observer.dispose();
+
+		InOrder order = Mockito.inOrder(messageManager);
+		order.verify(messageManager).printSummary(weaverComponentFlowable.getComponentInfo());
+		order.verifyNoMoreInteractions();
+	}
+
+	@Test
+	public void buildNone() throws Throwable {
+		when(proceedingJoinPoint.proceed()).thenReturn(Flowable.just(1));
+
+		WeaverComponentFlowable weaverComponentFlowable = new WeaverComponentFlowable(RxLogger.Scope.NONE, proceedingJoinPoint, messageManager, callback);
+		Flowable flowable = weaverComponentFlowable.build();
 
 		flowable.subscribe(observer);
 		observer.dispose();

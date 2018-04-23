@@ -10,7 +10,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public enum RxComponent {
+public enum ComponentType {
 
 	FLOWABLE(Flowable.class),
 	OBSERVABLE(Observable.class),
@@ -20,14 +20,14 @@ public enum RxComponent {
 
 	private Class aClass;
 
-	private static Map<Class, RxComponent> map = new HashMap<>();
+	private static Map<Class, ComponentType> map = new HashMap<>();
 
 	static {
-		for (RxComponent p : RxComponent.values())
+		for (ComponentType p : ComponentType.values())
 			map.put(p.aClass, p);
 	}
 
-	RxComponent(Class aClass) {
+	ComponentType(Class aClass) {
 		this.aClass = aClass;
 	}
 
@@ -36,7 +36,7 @@ public enum RxComponent {
 		return capitalize(name());
 	}
 
-	public static RxComponent fromClass(Class klass) {
+	public static ComponentType fromClass(Class klass) {
 		return map.get(klass);
 	}
 
