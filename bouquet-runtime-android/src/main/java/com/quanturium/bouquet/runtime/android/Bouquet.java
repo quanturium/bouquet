@@ -47,11 +47,19 @@ public class Bouquet {
 		Bouquet.messageManager = new MessageManager(logger);
 	}
 
-	@Pointcut(value = "execution(@com.quanturium.bouquet.annotations.RxLogger * *(..))")
-	public void methodAnnotatedWithRxLogger() {
+	@Pointcut(value = "execution(@com.quanturium.bouquet.annotations.RxLogger * *(..)) && if()")
+	public static boolean methodAnnotatedWithRxLogger(ProceedingJoinPoint joinPoint) {
+		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
+
+		if (componentType == null)
+			return false;
+
+		Annotation annotation = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(RxLogger.class);
+		RxLogger.Scope scope = annotation != null ? ((RxLogger) annotation).value() : RxLogger.Scope.ALL;
+		return scope != RxLogger.Scope.NONE;
 	}
 
-	@Around(value = "methodAnnotatedWithRxLogger()")
+	@Around(value = "methodAnnotatedWithRxLogger(joinPoint)")
 	public Object process(ProceedingJoinPoint joinPoint) throws Throwable {
 		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
 
@@ -66,11 +74,12 @@ public class Bouquet {
 		return WEAVER_FACTORY.buildWeaverComponent(componentType, scope, joinPoint, messageManager).build();
 	}
 
-	@Pointcut(value = "execution(* io.reactivex.*.subscribeOn(..))")
-	public void methodSubscribeOn() {
+	@Pointcut(value = "execution(* io.reactivex.*.subscribeOn(..)) && if()")
+	public static boolean methodSubscribeOn(ProceedingJoinPoint joinPoint) {
+		return true;
 	}
 
-	@Around(value = "methodSubscribeOn()")
+	@Around(value = "methodSubscribeOn(joinPoint)")
 	public Object processSubscribeOn(ProceedingJoinPoint joinPoint) throws Throwable {
 		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
 
