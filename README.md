@@ -1,6 +1,7 @@
 # Bouquet
 
 [![Core](https://api.bintray.com/packages/quanturium/maven/bouquet-plugin/images/download.svg) ](https://bintray.com/quanturium/maven/bouquet-plugin/_latestVersion)
+![Platform](https://img.shields.io/badge/platform-android%20%7C%20java%20%7C%20kotlin-lightgrey.svg)
 [![Build Status](https://travis-ci.org/quanturium/bouquet.svg?branch=master)](https://travis-ci.org/quanturium/bouquet)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/quanturium/bouquet/blob/master/LICENSE.txt)
 
@@ -24,7 +25,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.quanturium.bouquet:bouquet-plugin:1.1.0'
+    classpath 'com.quanturium.bouquet:bouquet-plugin:1.2.0'
   }
 }
 

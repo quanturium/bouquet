@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.2.0 *(2018-04-25)*
+----------------------------
+* Verify support for Kotlin
+* Adds sample for Kotlin
+
 Version 1.1.0 *(2018-04-24)*
 ----------------------------
 * Rewrite compile logic

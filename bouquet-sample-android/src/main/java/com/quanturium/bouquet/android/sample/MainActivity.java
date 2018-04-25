@@ -21,6 +21,11 @@ public class MainActivity extends AppCompatActivity {
 			getObservableExample("String 4")
 					.subscribe(s -> Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show());
 		});
+
+		findViewById(R.id.button2).setOnClickListener(v -> {
+			new KotlinSample().getKotlinCompletableExample()
+					.subscribe(() -> Toast.makeText(MainActivity.this, "complete!", Toast.LENGTH_SHORT).show());
+		});
 	}
 
 	@RxLogger(RxLogger.Scope.ALL)

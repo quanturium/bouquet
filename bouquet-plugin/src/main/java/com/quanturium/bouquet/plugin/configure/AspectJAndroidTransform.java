@@ -11,6 +11,7 @@ import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.BaseExtension;
 import com.android.build.gradle.api.BaseVariant;
+import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
@@ -30,7 +31,7 @@ public class AspectJAndroidTransform extends Transform {
 
 	private final static String NAME = "aspectj";
 	private final static Set<QualifiedContent.ContentType> INPUT_TYPES = Sets.newHashSet(QualifiedContent.DefaultContentType.CLASSES);
-	private static final Set<QualifiedContent.Scope> SCOPES = Sets.immutableEnumSet(QualifiedContent.Scope.PROJECT, QualifiedContent.Scope.SUB_PROJECTS, QualifiedContent.Scope.EXTERNAL_LIBRARIES);
+	private static final Set<QualifiedContent.Scope> SCOPES = TransformManager.SCOPE_FULL_PROJECT;
 	private static final Set<String> includedJars = Sets.newHashSet(
 			"io.reactivex.rxjava2:rxjava",
 			"com.quanturium.bouquet:bouquet-runtime-android"
