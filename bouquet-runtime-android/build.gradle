@@ -1,7 +1,3 @@
-import org.aspectj.bridge.IMessage
-import org.aspectj.bridge.MessageHandler
-import org.aspectj.tools.ajc.Main
-
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
@@ -32,41 +28,6 @@ android {
     variantFilter {
         if (it.buildType.name.equals('debug')) {
             it.ignore = true
-        }
-    }
-}
-
-android.libraryVariants.all { variant ->
-
-    JavaCompile javaCompile = variant.hasProperty('javaCompiler') ? variant.javaCompiler : variant.javaCompile
-
-    javaCompile.doLast {
-        String[] args = [
-                "-showWeaveInfo",
-                "-1.5",
-                "-inpath", javaCompile.destinationDir.toString(),
-                "-aspectpath", javaCompile.classpath.asPath,
-                "-d", javaCompile.destinationDir.toString(),
-                "-classpath", javaCompile.classpath.asPath
-        ]
-
-        final MessageHandler handler = new MessageHandler(true)
-        final def log = project.logger
-        new Main().run(args, handler)
-        for (IMessage message : handler.getMessages(null, true)) {
-            switch (message.getKind()) {
-                case IMessage.ABORT:
-                case IMessage.ERROR:
-                case IMessage.FAIL:
-                    log.error message.message, message.thrown
-                    break
-                case IMessage.INFO:
-                    log.info message.message, message.thrown
-                    break
-                case IMessage.DEBUG:
-                    log.debug message.message, message.thrown
-                    break
-            }
         }
     }
 }
