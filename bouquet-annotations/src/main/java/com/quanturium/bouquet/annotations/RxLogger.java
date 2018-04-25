@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Main: Bouquet => [Event] getObservableExample -> onNext() -> String 4
  * Main: Bouquet => [Event] getObservableExample -> onComplete()
  * Main: Bouquet => [Event] getObservableExample -> onTerminate()
- * Main: Bouquet => [Summary] getObservableExample -> Count: 4 items | Time: 2 ms | ObservingOn: main
+ * Main: Bouquet => [Summary] getObservableExample -> Count: 4 items | Time: 2 ms | SubscribeOn: RxCachedThreadScheduler-1 | ObservingOn: main
  *     }
  * </pre>
  */

@@ -6,9 +6,14 @@
 
 ## Description
 
-Bouquet is a java / android library to help debug and log various data when executing RxJava2 Observable, Flowable, Single, Maybe and Completable.
-* For Android, only debug builds will be annotated and wrapped with the debug logic.
+Bouquet is a java / android library that helps debugging RxJava2 by logging various data for Observables, Flowables, Singles, Maybes and Completables.
+* For Android, only debuggable builds will be annotated and wrapped with the debug logic.
 * For java, you might want to disable it in your build.gradle file on release builds.
+
+The logged info include:
+* Description of the method called
+* Life cycle events from RxJava
+* A summary of the result: count of items, time, subscribing thread and observing thread
 
 ## Setup
 
@@ -19,7 +24,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.quanturium.bouquet:bouquet-plugin:1.0.1'
+    classpath 'com.quanturium.bouquet:bouquet-plugin:1.1.0'
   }
 }
 
@@ -56,19 +61,21 @@ You can change the scope of logs in order to log more or less info:
 
 Possible values:  
 ```java
-enum Scope {ALL, SOURCE, LIFECYCLE, SUMMARY, NONE}
+enum RxLogger.Scope {ALL, SOURCE, LIFECYCLE, SUMMARY, NONE}
 ```
 
 ### Customization
 
 Enable/disable Bouquet at runtime:
 ```java
-Bouquet.setEnabled(boolean enabled);
+Bouquet.setEnabled(false);
 ```
 
 By default bouquet uses AndroidLogger() for Android, JavaLogger() for java. You can customize the logger at runtime:
 ```java
-Bouquet.setLogger(Logger logger);
+Bouquet.setLogger((tag, message) -> {
+    Timber.i(message);
+});
 ```
 
 ## Local development
