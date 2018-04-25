@@ -20,7 +20,7 @@ public final class Bouquet {
 
 	private static volatile MessageManager messageManager = new MessageManager(new JavaLogger());
 	private static volatile boolean enabled = true;
-	private static final WeaverFactory WEAVER_FACTORY = new WeaverFactory();
+	private static final WeaverFactory weaverFactory = new WeaverFactory();
 
 	/**
 	 * Enable or disable Bouquet
@@ -47,38 +47,47 @@ public final class Bouquet {
 		Bouquet.messageManager = new MessageManager(logger);
 	}
 
-	@Pointcut(value = "execution(@com.quanturium.bouquet.annotations.RxLogger * *(..))")
-	public void methodAnnotatedWithRxLogger() {
+	@Pointcut(value = "execution(@com.quanturium.bouquet.annotations.RxLogger * *(..)) && if()")
+	public static boolean methodAnnotatedWithRxLogger(ProceedingJoinPoint joinPoint) {
+		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
+
+		if (componentType == null)
+			return false;
+
+		Annotation annotation = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(RxLogger.class);
+		RxLogger.Scope scope = annotation != null ? ((RxLogger) annotation).value() : RxLogger.Scope.ALL;
+		return scope != RxLogger.Scope.NONE;
 	}
 
-	@Around(value = "methodAnnotatedWithRxLogger()")
+	@Around(value = "methodAnnotatedWithRxLogger(joinPoint)")
 	public Object process(ProceedingJoinPoint joinPoint) throws Throwable {
 		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
 
 		if (componentType == null) {
-			messageManager.printWrongMethodReturnType();
+			Bouquet.messageManager.printWrongMethodReturnType();
 			return joinPoint.proceed();
 		}
 
 		Annotation annotation = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(RxLogger.class);
 		RxLogger.Scope scope = annotation != null ? ((RxLogger) annotation).value() : RxLogger.Scope.ALL;
 
-		return WEAVER_FACTORY.buildWeaverComponent(componentType, scope, joinPoint, messageManager).build();
+		return Bouquet.weaverFactory.buildWeaverComponent(componentType, scope, joinPoint, Bouquet.messageManager).build();
 	}
 
-	@Pointcut(value = "execution(* io.reactivex.*.subscribeOn(..))")
-	public void methodSubscribeOn() {
+	@Pointcut(value = "execution(* io.reactivex.*.subscribeOn(..)) && if()")
+	public static boolean methodSubscribeOn(ProceedingJoinPoint joinPoint) {
+		return true;
 	}
 
-	@Around(value = "methodSubscribeOn()")
+	@Around(value = "methodSubscribeOn(joinPoint)")
 	public Object processSubscribeOn(ProceedingJoinPoint joinPoint) throws Throwable {
 		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
 
 		if (componentType == null) {
-			messageManager.printWrongMethodReturnType();
+			Bouquet.messageManager.printWrongMethodReturnType();
 			return joinPoint.proceed();
 		}
 
-		return WEAVER_FACTORY.buildWeaverOnSubscribeComponent(componentType, joinPoint).build();
+		return Bouquet.weaverFactory.buildWeaverOnSubscribeComponent(componentType, joinPoint).build();
 	}
 }

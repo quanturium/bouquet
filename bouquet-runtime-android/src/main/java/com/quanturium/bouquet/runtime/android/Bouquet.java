@@ -20,7 +20,7 @@ public class Bouquet {
 
 	private static volatile MessageManager messageManager = new MessageManager(new AndroidLogger());
 	private static volatile boolean enabled = true;
-	private static final WeaverFactory WEAVER_FACTORY = new WeaverFactory();
+	private static final WeaverFactory weaverFactory = new WeaverFactory();
 
 	/**
 	 * Enable or disable Bouquet
@@ -64,14 +64,14 @@ public class Bouquet {
 		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
 
 		if (componentType == null) {
-			messageManager.printWrongMethodReturnType();
+			Bouquet.messageManager.printWrongMethodReturnType();
 			return joinPoint.proceed();
 		}
 
 		Annotation annotation = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(RxLogger.class);
 		RxLogger.Scope scope = annotation != null ? ((RxLogger) annotation).value() : RxLogger.Scope.ALL;
 
-		return WEAVER_FACTORY.buildWeaverComponent(componentType, scope, joinPoint, messageManager).build();
+		return Bouquet.weaverFactory.buildWeaverComponent(componentType, scope, joinPoint, Bouquet.messageManager).build();
 	}
 
 	@Pointcut(value = "execution(* io.reactivex.*.subscribeOn(..)) && if()")
@@ -84,10 +84,10 @@ public class Bouquet {
 		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
 
 		if (componentType == null) {
-			messageManager.printWrongMethodReturnType();
+			Bouquet.messageManager.printWrongMethodReturnType();
 			return joinPoint.proceed();
 		}
 
-		return WEAVER_FACTORY.buildWeaverOnSubscribeComponent(componentType, joinPoint).build();
+		return Bouquet.weaverFactory.buildWeaverOnSubscribeComponent(componentType, joinPoint).build();
 	}
 }

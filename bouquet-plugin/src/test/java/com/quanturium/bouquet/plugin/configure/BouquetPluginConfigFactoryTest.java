@@ -6,6 +6,8 @@ import org.gradle.api.tasks.TaskInstantiationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.quanturium.bouquet.plugin.configure.ProjectType.ANDROID_APP;
@@ -20,11 +22,12 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class BouquetPluginConfigFactoryTest {
 
+	@Mock
 	private Project project;
 
 	@Before
 	public void setUp() {
-		project = mock(Project.class);
+		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test

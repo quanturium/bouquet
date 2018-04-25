@@ -8,7 +8,9 @@ import org.gradle.api.plugins.ExtensionContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.quanturium.bouquet.plugin.BouquetExtension.BOUQUET_EXTENSION;
@@ -21,13 +23,14 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class BouquetPluginConfigTest {
 
+	@Mock
 	Project project;
 	ProjectType projectType;
 	BouquetPluginConfig bouquetPluginConfig;
 
 	@Before
 	public void setUp() {
-		project = mock(Project.class);
+		MockitoAnnotations.initMocks(this);
 		projectType = ProjectType.ANDROID_APP;
 		bouquetPluginConfig = Mockito.spy(new BouquetPluginConfig(project, projectType) {
 			@Override

@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
 	private Observable<String> getObservableExample(String extra) {
 		return Observable.just("String 1", "String 2", "String 3", extra)
 				.subscribeOn(Schedulers.io())
-				.doOnNext(s -> System.out.println(Thread.currentThread().getName()))
 				.observeOn(AndroidSchedulers.mainThread());
 	}
 }
