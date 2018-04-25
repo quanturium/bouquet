@@ -9,7 +9,7 @@ import org.gradle.api.Project;
 public class BouquetPlugin implements Plugin<Project> {
 
 	public static final String BOUQUET_VERSION = "1.0.1";
-	public static final String ASPECTJ_VERSION = "1.8.6";
+	public static final String ASPECTJ_VERSION = "1.9.1";
 
 	@Override
 	public void apply(Project project) {
