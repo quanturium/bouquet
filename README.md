@@ -52,6 +52,17 @@ This will print out the following
 
 ![Logs](https://raw.githubusercontent.com/quanturium/bouquet/master/assets/screenshot001.png)
 
+or in Kotlin:
+
+```kotlin
+@RxLogger(SUMMARY)
+fun getKotlinCompletableExample(): Completable {
+    return Completable.complete() // Useless, just for demo purposes
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+}
+```
+
 ### Scopes
 
 You can change the scope of logs in order to log more or less info:
