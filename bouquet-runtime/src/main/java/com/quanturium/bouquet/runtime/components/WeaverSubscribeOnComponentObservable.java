@@ -4,9 +4,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.reactivex.Observable;
 
-public class WeaverOnSubscribeComponentObservable extends WeaverOnSubscribeComponentAbstract<Observable> {
+public class WeaverSubscribeOnComponentObservable extends WeaverSubscribeOnComponentAbstract<Observable> {
 
-	WeaverOnSubscribeComponentObservable(ProceedingJoinPoint joinPoint, WeaverComponent<Observable> parentWeaverComponent) {
+	WeaverSubscribeOnComponentObservable(ProceedingJoinPoint joinPoint, WeaverComponent<Observable> parentWeaverComponent) {
 		super(joinPoint, parentWeaverComponent);
 	}
 
@@ -19,6 +19,10 @@ public class WeaverOnSubscribeComponentObservable extends WeaverOnSubscribeCompo
 	private <T> Observable<T> buildComponentInternal() throws Throwable {
 		if (getParentWeaverComponent() == null)
 			return (Observable<T>) getJoinPoint().proceed();
+
+		if (getParentWeaverComponent().getComponentInfo().subscribeOnScheduler() == null) {
+			getParentWeaverComponent().getComponentInfo().setSubscribeOnScheduler(getSchedulerName());
+		}
 
 		return ((Observable<T>) getJoinPoint().proceed())
 				.doFinally(() -> {

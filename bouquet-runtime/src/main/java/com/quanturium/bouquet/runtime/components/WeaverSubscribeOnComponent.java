@@ -2,7 +2,7 @@ package com.quanturium.bouquet.runtime.components;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
-public interface WeaverOnSubscribeComponent<T> {
+public interface WeaverSubscribeOnComponent<T> {
 
 	T build() throws Throwable;
 

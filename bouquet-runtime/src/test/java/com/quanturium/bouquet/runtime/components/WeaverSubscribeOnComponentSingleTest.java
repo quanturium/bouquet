@@ -6,15 +6,16 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class WeaverOnSubscribeComponentCompletableTest {
+public class WeaverSubscribeOnComponentSingleTest {
 
 	@Mock
 	ProceedingJoinPoint proceedingJoinPoint;
@@ -33,30 +34,33 @@ public class WeaverOnSubscribeComponentCompletableTest {
 
 	@Test
 	public void build() throws Throwable {
-		when(proceedingJoinPoint.proceed()).thenReturn(Completable.complete());
+		when(proceedingJoinPoint.proceed()).thenReturn(Single.just(1));
 		when(parentWeaverComponent.getComponentInfo()).thenReturn(componentInfo);
+		when(proceedingJoinPoint.getArgs()).thenReturn(new Object[]{Schedulers.io()});
 
-		WeaverOnSubscribeComponentCompletable weaverOnSubscribeComponentCompletable = new WeaverOnSubscribeComponentCompletable(proceedingJoinPoint, parentWeaverComponent);
-		Completable completable = weaverOnSubscribeComponentCompletable.build();
+		WeaverSubscribeOnComponentSingle weaverOnSubscribeComponentSingle = new WeaverSubscribeOnComponentSingle(proceedingJoinPoint, parentWeaverComponent);
+		Single single = weaverOnSubscribeComponentSingle.build();
 
-		completable.subscribe(observer);
+		single.subscribe(observer);
 		observer.dispose();
 
 		observer.assertComplete();
+		verify(componentInfo).setSubscribeOnScheduler(anyString());
 		verify(componentInfo).setSubscribeOnThread(anyString());
 	}
 
 	@Test
 	public void buildWithoutParent() throws Throwable {
-		when(proceedingJoinPoint.proceed()).thenReturn(Completable.complete());
+		when(proceedingJoinPoint.proceed()).thenReturn(Single.just(1));
 
-		WeaverOnSubscribeComponentCompletable weaverOnSubscribeComponentCompletable = new WeaverOnSubscribeComponentCompletable(proceedingJoinPoint, null);
-		Completable completable = weaverOnSubscribeComponentCompletable.build();
+		WeaverSubscribeOnComponentSingle weaverOnSubscribeComponentSingle = new WeaverSubscribeOnComponentSingle(proceedingJoinPoint, null);
+		Single single = weaverOnSubscribeComponentSingle.build();
 
-		completable.subscribe(observer);
+		single.subscribe(observer);
 		observer.dispose();
 
 		observer.assertComplete();
+		verify(componentInfo, times(0)).setSubscribeOnScheduler(anyString());
 		verify(componentInfo, times(0)).setSubscribeOnThread(anyString());
 	}
 }

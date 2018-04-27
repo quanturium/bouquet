@@ -8,13 +8,14 @@ import org.mockito.MockitoAnnotations;
 
 import io.reactivex.Observable;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class WeaverOnSubscribeComponentObservableTest {
+public class WeaverObserveOnComponentObservableTest {
 
 	@Mock
 	ProceedingJoinPoint proceedingJoinPoint;
@@ -35,28 +36,29 @@ public class WeaverOnSubscribeComponentObservableTest {
 	public void build() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Observable.just(1));
 		when(parentWeaverComponent.getComponentInfo()).thenReturn(componentInfo);
+		when(proceedingJoinPoint.getArgs()).thenReturn(new Object[]{Schedulers.io()});
 
-		WeaverOnSubscribeComponentObservable weaverOnSubscribeComponentObservable = new WeaverOnSubscribeComponentObservable(proceedingJoinPoint, parentWeaverComponent);
-		Observable observable = weaverOnSubscribeComponentObservable.build();
+		WeaverObserveOnComponentObservable weaverObserveOnComponentObservable = new WeaverObserveOnComponentObservable(proceedingJoinPoint, parentWeaverComponent);
+		Observable observable = weaverObserveOnComponentObservable.build();
 
 		observable.subscribe(observer);
 		observer.dispose();
 
 		observer.assertComplete();
-		verify(componentInfo).setSubscribeOnThread(anyString());
+		verify(componentInfo).setObserveOnScheduler(anyString());
 	}
 
 	@Test
 	public void buildWithoutParent() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Observable.just(1));
 
-		WeaverOnSubscribeComponentObservable weaverOnSubscribeComponentObservable = new WeaverOnSubscribeComponentObservable(proceedingJoinPoint, null);
-		Observable observable = weaverOnSubscribeComponentObservable.build();
+		WeaverObserveOnComponentObservable weaverObserveOnComponentObservable = new WeaverObserveOnComponentObservable(proceedingJoinPoint, null);
+		Observable observable = weaverObserveOnComponentObservable.build();
 
 		observable.subscribe(observer);
 		observer.dispose();
 
 		observer.assertComplete();
-		verify(componentInfo, times(0)).setSubscribeOnThread(anyString());
+		verify(componentInfo, times(0)).setObserveOnScheduler(anyString());
 	}
 }

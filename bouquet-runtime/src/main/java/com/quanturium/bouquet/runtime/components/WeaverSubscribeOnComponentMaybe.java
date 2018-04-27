@@ -4,9 +4,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.reactivex.Maybe;
 
-public class WeaverOnSubscribeComponentMaybe extends WeaverOnSubscribeComponentAbstract<Maybe> {
+public class WeaverSubscribeOnComponentMaybe extends WeaverSubscribeOnComponentAbstract<Maybe> {
 
-	WeaverOnSubscribeComponentMaybe(ProceedingJoinPoint joinPoint, WeaverComponent<Maybe> parentWeaverComponent) {
+	WeaverSubscribeOnComponentMaybe(ProceedingJoinPoint joinPoint, WeaverComponent<Maybe> parentWeaverComponent) {
 		super(joinPoint, parentWeaverComponent);
 	}
 
@@ -19,6 +19,10 @@ public class WeaverOnSubscribeComponentMaybe extends WeaverOnSubscribeComponentA
 	private <T> Maybe<T> buildComponentInternal() throws Throwable {
 		if (getParentWeaverComponent() == null)
 			return (Maybe<T>) getJoinPoint().proceed();
+
+		if (getParentWeaverComponent().getComponentInfo().subscribeOnScheduler() == null) {
+			getParentWeaverComponent().getComponentInfo().setSubscribeOnScheduler(getSchedulerName());
+		}
 
 		return ((Maybe<T>) getJoinPoint().proceed())
 				.doFinally(() -> {

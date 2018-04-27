@@ -26,7 +26,7 @@ android {
     }
 
     variantFilter {
-        if (it.buildType.name.equals('debug')) {
+        if (it.buildType.name == 'debug') {
             it.ignore = true
         }
     }

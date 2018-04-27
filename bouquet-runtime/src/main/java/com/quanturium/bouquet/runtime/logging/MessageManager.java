@@ -54,5 +54,12 @@ public class MessageManager {
 						.build()
 						.toString()
 		);
+		logger.log(
+				componentInfo.classSimpleName(),
+				new Message.Builder(componentInfo)
+						.summaryThread()
+						.build()
+						.toString()
+		);
 	}
 }

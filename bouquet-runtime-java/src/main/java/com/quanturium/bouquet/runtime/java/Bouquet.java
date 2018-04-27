@@ -84,10 +84,25 @@ public final class Bouquet {
 		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
 
 		if (componentType == null) {
-			Bouquet.messageManager.printWrongMethodReturnType();
 			return joinPoint.proceed();
 		}
 
-		return Bouquet.weaverFactory.buildWeaverOnSubscribeComponent(componentType, joinPoint).build();
+		return Bouquet.weaverFactory.buildWeaverSubscribeOnComponent(componentType, joinPoint).build();
+	}
+
+	@Pointcut(value = "execution(* io.reactivex.*.observeOn(..)) && if()")
+	public static boolean methodObserveOn(ProceedingJoinPoint joinPoint) {
+		return true;
+	}
+
+	@Around(value = "methodObserveOn(joinPoint)")
+	public Object processObserveOn(ProceedingJoinPoint joinPoint) throws Throwable {
+		ComponentType componentType = ComponentType.fromClass(((MethodSignature) joinPoint.getSignature()).getReturnType());
+
+		if (componentType == null) {
+			return joinPoint.proceed();
+		}
+
+		return Bouquet.weaverFactory.buildWeaverObserveOnComponent(componentType, joinPoint).build();
 	}
 }

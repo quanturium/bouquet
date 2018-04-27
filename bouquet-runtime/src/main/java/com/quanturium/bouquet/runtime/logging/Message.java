@@ -1,7 +1,7 @@
 package com.quanturium.bouquet.runtime.logging;
 
-import com.quanturium.bouquet.runtime.components.ComponentType;
 import com.quanturium.bouquet.runtime.components.ComponentInfo;
+import com.quanturium.bouquet.runtime.components.ComponentType;
 import com.quanturium.bouquet.runtime.components.RxEvent;
 
 import java.util.List;
@@ -10,6 +10,7 @@ public class Message {
 
 	private static final String LABEL = "Bouquet => ";
 	private static final String VALUE_SEPARATOR = " -> ";
+	private static final String ITEM_SEPERATOR = " | ";
 	private static final String METHOD_SEPARATOR = "#";
 	private static final String MESSAGE_TYPE_SOURCE = "[Source] ";
 	private static final String MESSAGE_TYPE_EVENT = "[Event] ";
@@ -117,18 +118,44 @@ public class Message {
 					sb.append(" item");
 				else
 					sb.append(" items");
-				sb.append(" | ");
+				sb.append(ITEM_SEPERATOR);
 			}
 			sb.append("Time: ");
 			sb.append(componentInfo.totalExecutionTime());
 			sb.append(" ms");
-			if (componentInfo.subscribeOnThread() != null) {
-				sb.append(" | SubscribeOn: ");
-				sb.append(componentInfo.subscribeOnThread());
+			sb.append(ITEM_SEPERATOR);
+			sb.append("Subscription: ");
+			if (componentInfo.isSynchronous()) {
+				sb.append("synchronous");
+			} else {
+				sb.append("asynchronous");
 			}
-			if (componentInfo.observeOnThread() != null) {
-				sb.append(" | ObservingOn: ");
+			return this;
+		}
+
+		public Builder summaryThread() {
+			sb.append(MESSAGE_TYPE_SUMMARY);
+			sb.append(componentInfo.methodName());
+			sb.append(VALUE_SEPARATOR);
+			if (componentInfo.isSynchronous()) {
+				sb.append("Calling thread: ");
 				sb.append(componentInfo.observeOnThread());
+			} else {
+				if (componentInfo.subscribeOnScheduler() != null) {
+					sb.append("Subscribe: ");
+					sb.append(componentInfo.subscribeOnScheduler());
+					sb.append(" (");
+					sb.append(componentInfo.subscribeOnThread());
+					sb.append(")");
+				}
+				if (componentInfo.observeOnScheduler() != null) {
+					sb.append(ITEM_SEPERATOR);
+					sb.append("Observe: ");
+					sb.append(componentInfo.observeOnScheduler());
+					sb.append(" (");
+					sb.append(componentInfo.observeOnThread());
+					sb.append(")");
+				}
 			}
 			return this;
 		}

@@ -8,13 +8,14 @@ import org.mockito.MockitoAnnotations;
 
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class WeaverOnSubscribeComponentSingleTest {
+public class WeaverObserveOnComponentSingleTest {
 
 	@Mock
 	ProceedingJoinPoint proceedingJoinPoint;
@@ -35,28 +36,29 @@ public class WeaverOnSubscribeComponentSingleTest {
 	public void build() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Single.just(1));
 		when(parentWeaverComponent.getComponentInfo()).thenReturn(componentInfo);
+		when(proceedingJoinPoint.getArgs()).thenReturn(new Object[]{Schedulers.io()});
 
-		WeaverOnSubscribeComponentSingle weaverOnSubscribeComponentSingle = new WeaverOnSubscribeComponentSingle(proceedingJoinPoint, parentWeaverComponent);
-		Single single = weaverOnSubscribeComponentSingle.build();
+		WeaverObserveOnComponentSingle weaverObserveOnComponentSingle = new WeaverObserveOnComponentSingle(proceedingJoinPoint, parentWeaverComponent);
+		Single single = weaverObserveOnComponentSingle.build();
 
 		single.subscribe(observer);
 		observer.dispose();
 
 		observer.assertComplete();
-		verify(componentInfo).setSubscribeOnThread(anyString());
+		verify(componentInfo).setObserveOnScheduler(anyString());
 	}
 
 	@Test
 	public void buildWithoutParent() throws Throwable {
 		when(proceedingJoinPoint.proceed()).thenReturn(Single.just(1));
 
-		WeaverOnSubscribeComponentSingle weaverOnSubscribeComponentSingle = new WeaverOnSubscribeComponentSingle(proceedingJoinPoint, null);
-		Single single = weaverOnSubscribeComponentSingle.build();
+		WeaverObserveOnComponentSingle weaverObserveOnComponentSingle = new WeaverObserveOnComponentSingle(proceedingJoinPoint, null);
+		Single single = weaverObserveOnComponentSingle.build();
 
 		single.subscribe(observer);
 		observer.dispose();
 
 		observer.assertComplete();
-		verify(componentInfo, times(0)).setSubscribeOnThread(anyString());
+		verify(componentInfo, times(0)).setObserveOnScheduler(anyString());
 	}
 }

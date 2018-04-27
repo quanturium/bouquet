@@ -4,9 +4,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.reactivex.Completable;
 
-public class WeaverOnSubscribeComponentCompletable extends WeaverOnSubscribeComponentAbstract<Completable> {
+public class WeaverSubscribeOnComponentCompletable extends WeaverSubscribeOnComponentAbstract<Completable> {
 
-	WeaverOnSubscribeComponentCompletable(ProceedingJoinPoint joinPoint, WeaverComponent<Completable> parentWeaverComponent) {
+	WeaverSubscribeOnComponentCompletable(ProceedingJoinPoint joinPoint, WeaverComponent<Completable> parentWeaverComponent) {
 		super(joinPoint, parentWeaverComponent);
 	}
 
@@ -18,6 +18,10 @@ public class WeaverOnSubscribeComponentCompletable extends WeaverOnSubscribeComp
 	private Completable buildComponentInternal() throws Throwable {
 		if (getParentWeaverComponent() == null)
 			return (Completable) getJoinPoint().proceed();
+
+		if (getParentWeaverComponent().getComponentInfo().subscribeOnScheduler() == null) {
+			getParentWeaverComponent().getComponentInfo().setSubscribeOnScheduler(getSchedulerName());
+		}
 
 		return ((Completable) getJoinPoint().proceed())
 				.doFinally(() -> {

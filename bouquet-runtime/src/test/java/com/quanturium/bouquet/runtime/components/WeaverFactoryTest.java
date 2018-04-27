@@ -43,11 +43,20 @@ public class WeaverFactoryTest {
 	}
 
 	@Test
-	public void buildWeaverOnSubscribeComponent() {
-		assertTrue(weaverFactory.buildWeaverOnSubscribeComponent(ComponentType.OBSERVABLE, null) instanceof WeaverOnSubscribeComponentObservable);
-		assertTrue(weaverFactory.buildWeaverOnSubscribeComponent(ComponentType.FLOWABLE, null) instanceof WeaverOnSubscribeComponentFlowable);
-		assertTrue(weaverFactory.buildWeaverOnSubscribeComponent(ComponentType.SINGLE, null) instanceof WeaverOnSubscribeComponentSingle);
-		assertTrue(weaverFactory.buildWeaverOnSubscribeComponent(ComponentType.MAYBE, null) instanceof WeaverOnSubscribeComponentMaybe);
-		assertTrue(weaverFactory.buildWeaverOnSubscribeComponent(ComponentType.COMPLETABLE, null) instanceof WeaverOnSubscribeComponentCompletable);
+	public void buildWeaverSubscribeOnComponent() {
+		assertTrue(weaverFactory.buildWeaverSubscribeOnComponent(ComponentType.OBSERVABLE, null) instanceof WeaverSubscribeOnComponentObservable);
+		assertTrue(weaverFactory.buildWeaverSubscribeOnComponent(ComponentType.FLOWABLE, null) instanceof WeaverSubscribeOnComponentFlowable);
+		assertTrue(weaverFactory.buildWeaverSubscribeOnComponent(ComponentType.SINGLE, null) instanceof WeaverSubscribeOnComponentSingle);
+		assertTrue(weaverFactory.buildWeaverSubscribeOnComponent(ComponentType.MAYBE, null) instanceof WeaverSubscribeOnComponentMaybe);
+		assertTrue(weaverFactory.buildWeaverSubscribeOnComponent(ComponentType.COMPLETABLE, null) instanceof WeaverSubscribeOnComponentCompletable);
+	}
+
+	@Test
+	public void buildWeaverObserveOnComponent() {
+		assertTrue(weaverFactory.buildWeaverObserveOnComponent(ComponentType.OBSERVABLE, null) instanceof WeaverObserveOnComponentObservable);
+		assertTrue(weaverFactory.buildWeaverObserveOnComponent(ComponentType.FLOWABLE, null) instanceof WeaverObserveOnComponentFlowable);
+		assertTrue(weaverFactory.buildWeaverObserveOnComponent(ComponentType.SINGLE, null) instanceof WeaverObserveOnComponentSingle);
+		assertTrue(weaverFactory.buildWeaverObserveOnComponent(ComponentType.MAYBE, null) instanceof WeaverObserveOnComponentMaybe);
+		assertTrue(weaverFactory.buildWeaverObserveOnComponent(ComponentType.COMPLETABLE, null) instanceof WeaverObserveOnComponentCompletable);
 	}
 }

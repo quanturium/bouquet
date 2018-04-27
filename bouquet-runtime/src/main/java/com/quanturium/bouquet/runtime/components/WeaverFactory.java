@@ -46,21 +46,42 @@ public class WeaverFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public WeaverOnSubscribeComponent buildWeaverOnSubscribeComponent(@NonNull ComponentType componentType, @NonNull ProceedingJoinPoint joinPoint) {
+	public WeaverSubscribeOnComponent buildWeaverSubscribeOnComponent(@NonNull ComponentType componentType, @NonNull ProceedingJoinPoint joinPoint) {
 
 		WeaverComponent parentWeaverComponent = currentWeaverComponent.get();
 
 		switch (componentType) {
 			case FLOWABLE:
-				return new WeaverOnSubscribeComponentFlowable(joinPoint, parentWeaverComponent);
+				return new WeaverSubscribeOnComponentFlowable(joinPoint, parentWeaverComponent);
 			case OBSERVABLE:
-				return new WeaverOnSubscribeComponentObservable(joinPoint, parentWeaverComponent);
+				return new WeaverSubscribeOnComponentObservable(joinPoint, parentWeaverComponent);
 			case SINGLE:
-				return new WeaverOnSubscribeComponentSingle(joinPoint, parentWeaverComponent);
+				return new WeaverSubscribeOnComponentSingle(joinPoint, parentWeaverComponent);
 			case MAYBE:
-				return new WeaverOnSubscribeComponentMaybe(joinPoint, parentWeaverComponent);
+				return new WeaverSubscribeOnComponentMaybe(joinPoint, parentWeaverComponent);
 			case COMPLETABLE:
-				return new WeaverOnSubscribeComponentCompletable(joinPoint, parentWeaverComponent);
+				return new WeaverSubscribeOnComponentCompletable(joinPoint, parentWeaverComponent);
+			default:
+				return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public WeaverObserveOnComponent buildWeaverObserveOnComponent(@NonNull ComponentType componentType, @NonNull ProceedingJoinPoint joinPoint) {
+
+		WeaverComponent parentWeaverComponent = currentWeaverComponent.get();
+
+		switch (componentType) {
+			case FLOWABLE:
+				return new WeaverObserveOnComponentFlowable(joinPoint, parentWeaverComponent);
+			case OBSERVABLE:
+				return new WeaverObserveOnComponentObservable(joinPoint, parentWeaverComponent);
+			case SINGLE:
+				return new WeaverObserveOnComponentSingle(joinPoint, parentWeaverComponent);
+			case MAYBE:
+				return new WeaverObserveOnComponentMaybe(joinPoint, parentWeaverComponent);
+			case COMPLETABLE:
+				return new WeaverObserveOnComponentCompletable(joinPoint, parentWeaverComponent);
 			default:
 				return null;
 		}

@@ -13,10 +13,12 @@ public class ComponentInfo {
 	private final ComponentType componentType;
 	private final ProceedingJoinPoint joinPoint;
 
-	private String subscribeOnThread;
-	private String observeOnThread;
 	private long totalExecutionTime;
 	private int totalEmittedItems;
+	private String subscribeOnScheduler;
+	private String subscribeOnThread;
+	private String observeOnScheduler;
+	private String observeOnThread;
 
 	public ComponentInfo(ComponentType componentType, ProceedingJoinPoint joinPoint) {
 		this.componentType = componentType;
@@ -58,35 +60,55 @@ public class ComponentInfo {
 		return ((MethodSignature) this.joinPoint.getSignature()).getMethod().getGenericReturnType();
 	}
 
-	public String subscribeOnThread() {
-		return subscribeOnThread;
-	}
-
-	public String observeOnThread() {
-		return observeOnThread;
-	}
-
 	public long totalExecutionTime() {
 		return totalExecutionTime;
-	}
-
-	public int totalEmittedItems() {
-		return totalEmittedItems;
-	}
-
-	public void setSubscribeOnThread(String subscribeOnThread) {
-		this.subscribeOnThread = subscribeOnThread;
-	}
-
-	public void setObserveOnThread(String observeOnThread) {
-		this.observeOnThread = observeOnThread;
 	}
 
 	public void setTotalExecutionTime(long totalExecutionTime) {
 		this.totalExecutionTime = totalExecutionTime;
 	}
 
+	public int totalEmittedItems() {
+		return totalEmittedItems;
+	}
+
 	public void setTotalEmittedItems(int totalEmittedItems) {
 		this.totalEmittedItems = totalEmittedItems;
+	}
+
+	public boolean isSynchronous() {
+		return subscribeOnScheduler == null && observeOnScheduler == null;
+	}
+
+	public String subscribeOnScheduler() {
+		return this.subscribeOnScheduler;
+	}
+
+	public void setSubscribeOnScheduler(String schedulerName) {
+		this.subscribeOnScheduler = schedulerName;
+	}
+
+	public String subscribeOnThread() {
+		return subscribeOnThread;
+	}
+
+	public void setSubscribeOnThread(String subscribeOnThread) {
+		this.subscribeOnThread = subscribeOnThread;
+	}
+
+	public String observeOnScheduler() {
+		return this.observeOnScheduler;
+	}
+
+	public void setObserveOnScheduler(String schedulerName) {
+		this.observeOnScheduler = schedulerName;
+	}
+
+	public String observeOnThread() {
+		return observeOnThread;
+	}
+
+	public void setObserveOnThread(String observeOnThread) {
+		this.observeOnThread = observeOnThread;
 	}
 }
