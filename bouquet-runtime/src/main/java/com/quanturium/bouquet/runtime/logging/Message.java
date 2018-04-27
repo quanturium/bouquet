@@ -10,8 +10,7 @@ public class Message {
 
 	private static final String LABEL = "Bouquet => ";
 	private static final String VALUE_SEPARATOR = " -> ";
-	private static final String ITEM_SEPERATOR = " | ";
-	private static final String METHOD_SEPARATOR = "#";
+	private static final String ITEM_SEPARATOR = " | ";
 	private static final String MESSAGE_TYPE_SOURCE = "[Source] ";
 	private static final String MESSAGE_TYPE_EVENT = "[Event] ";
 	private static final String MESSAGE_TYPE_SUMMARY = "[Summary] ";
@@ -39,10 +38,10 @@ public class Message {
 
 		public Builder source() {
 			sb.append(MESSAGE_TYPE_SOURCE);
+			sb.append(componentInfo.classSimpleName());
+			sb.append(VALUE_SEPARATOR);
 			sb.append(componentInfo.methodReturnType());
 			sb.append(" ");
-			sb.append(componentInfo.classSimpleName());
-			sb.append(METHOD_SEPARATOR);
 			sb.append(componentInfo.methodName());
 			sb.append("(");
 			List<String> methodParamNames = componentInfo.methodParamNamesList();
@@ -118,12 +117,12 @@ public class Message {
 					sb.append(" item");
 				else
 					sb.append(" items");
-				sb.append(ITEM_SEPERATOR);
+				sb.append(ITEM_SEPARATOR);
 			}
 			sb.append("Time: ");
 			sb.append(componentInfo.totalExecutionTime());
 			sb.append(" ms");
-			sb.append(ITEM_SEPERATOR);
+			sb.append(ITEM_SEPARATOR);
 			sb.append("Subscription: ");
 			if (componentInfo.isSynchronous()) {
 				sb.append("synchronous");
@@ -149,7 +148,7 @@ public class Message {
 					sb.append(")");
 				}
 				if (componentInfo.observeOnScheduler() != null) {
-					sb.append(ITEM_SEPERATOR);
+					sb.append(ITEM_SEPARATOR);
 					sb.append("Observe: ");
 					sb.append(componentInfo.observeOnScheduler());
 					sb.append(" (");

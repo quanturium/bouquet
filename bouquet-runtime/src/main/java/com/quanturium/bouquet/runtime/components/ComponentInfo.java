@@ -3,6 +3,7 @@ package com.quanturium.bouquet.runtime.components;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,8 +57,36 @@ public class ComponentInfo {
 		return args != null ? Arrays.asList(args) : Collections.emptyList();
 	}
 
-	public Type methodReturnType() {
-		return ((MethodSignature) this.joinPoint.getSignature()).getMethod().getGenericReturnType();
+	public String methodReturnType() {
+		StringBuilder sb = new StringBuilder();
+		methodReturnTypeInternal(((MethodSignature) this.joinPoint.getSignature()).getMethod().getGenericReturnType(), sb);
+		return sb.toString();
+	}
+
+	private void methodReturnTypeInternal(Type type, StringBuilder sb) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Type rawType = parameterizedType.getRawType();
+			Type[] typeArguments = parameterizedType.getActualTypeArguments();
+			sb.append(typeSimpleName(rawType));
+			if (typeArguments != null && typeArguments.length > 0) {
+				sb.append("<");
+				for (int i = 0; i < typeArguments.length; i++) {
+					methodReturnTypeInternal(typeArguments[i], sb);
+				}
+				sb.append(">");
+			}
+		} else {
+			sb.append(typeSimpleName(type));
+		}
+	}
+
+	private String typeSimpleName(Type type) {
+		if (type instanceof Class) {
+			return ((Class) type).getSimpleName();
+		} else {
+			return type.getTypeName();
+		}
 	}
 
 	public long totalExecutionTime() {

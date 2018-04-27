@@ -87,7 +87,7 @@ public class ComponentInfoTest {
 		Method testMethod = getClass().getMethod("testMethod");
 
 		when(signature.getMethod()).thenReturn(testMethod);
-		assertEquals("io.reactivex.Observable", componentInfo.methodReturnType().getTypeName());
+		assertEquals("Observable", componentInfo.methodReturnType());
 	}
 
 	@Test
