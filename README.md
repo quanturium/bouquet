@@ -65,7 +65,7 @@ or in Kotlin:
 fun getKotlinCompletableExample(): Completable {
     return Completable.complete() // Useless, just for demo purposes
         .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(Schedulers.newThread())
 }
 ```
 
