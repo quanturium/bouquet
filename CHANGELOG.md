@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.3.0 *(2018-04-26)*
+----------------------------
+* Adds support for displaying if the Observable is synchronous or asynchronous
+* Adds support for displaying the name of scheduler used in subscribeOn / observeOn in addition to the thread name
+
 Version 1.2.0 *(2018-04-25)*
 ----------------------------
 * Verify support for Kotlin

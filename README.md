@@ -14,7 +14,11 @@ Bouquet is a java / android library that helps debugging RxJava2 by logging vari
 The logged info include:
 * Description of the method called
 * Life cycle events from RxJava
-* A summary of the result: count of items, time, subscribing thread and observing thread
+* A summary of the result: 
+    * count of items
+    * benchmark
+    * whether it is synchronous or asynchronous
+    * subscribing/observing scheduler and thread name
 
 ## Setup
 
@@ -25,7 +29,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.quanturium.bouquet:bouquet-plugin:1.2.0'
+    classpath 'com.quanturium.bouquet:bouquet-plugin:1.3.0'
   }
 }
 
@@ -44,7 +48,9 @@ Annotate any method returning an Observable, Flowable, Single, Maybe, Completabl
 ```java
 @RxLogger
 private static Observable<String> getObservableExample(String extra) {
-    return Observable.just("String 1", "String 2", "String 3", extra);
+    return Observable.just("String 1", "String 2", "String 3", extra)
+        .subscribeOn(Schedulers.io())
+        .observeOn(Schedulers.newThread());
 }
 ```
 
