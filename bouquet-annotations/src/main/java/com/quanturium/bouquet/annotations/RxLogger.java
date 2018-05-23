@@ -1,10 +1,9 @@
 package com.quanturium.bouquet.annotations;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * RxLogger annotation.
@@ -23,12 +22,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Main: Bouquet => [Event] getObservableExample -> onNext() -> String 4
  * Main: Bouquet => [Event] getObservableExample -> onComplete()
  * Main: Bouquet => [Event] getObservableExample -> onTerminate()
- * Main: Bouquet => [Summary] getObservableExample -> Count: 4 items | Time: 2 ms | SubscribeOn: RxCachedThreadScheduler-1 | ObservingOn: main
+ * Main: Bouquet => [Summary] getObservableExample -> Count: 4 items | Time: 2 ms | Subscription: asynchronous
+ * Main: Bouquet => [Summary] getObservableExample -> Subscribe: IO (RxCachedThreadScheduler-1) | Observe: NEW_THREAD (RxNewThreadScheduler-1)
  *     }
  * </pre>
  */
-@Retention(RUNTIME)
-@Target({METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface RxLogger {
 
 	Scope value() default Scope.ALL;
