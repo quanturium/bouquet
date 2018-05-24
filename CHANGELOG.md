@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 1.3.1 *(2018-05-23)*
+----------------------------
+* Fixes issue when instant-run is enabled
+
 Version 1.3.0 *(2018-04-26)*
 ----------------------------
 * Adds support for displaying if the Observable is synchronous or asynchronous
