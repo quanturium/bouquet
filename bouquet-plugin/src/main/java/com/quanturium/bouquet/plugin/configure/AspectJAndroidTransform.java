@@ -70,7 +70,8 @@ public class AspectJAndroidTransform extends Transform {
 		TransformOutputProvider outputProvider = transformInvocation.getOutputProvider();
 
 		// Clean up
-		outputProvider.deleteAll();
+		if (!transformInvocation.isIncremental())
+			outputProvider.deleteAll();
 
 		// Check if we are handling this specific variant
 		if (getVariant(context) == null) {
@@ -79,8 +80,8 @@ public class AspectJAndroidTransform extends Transform {
 				for (DirectoryInput directoryInput : input.getDirectoryInputs()) {
 					File output = outputProvider.getContentLocation(
 							directoryInput.getName(),
-							INPUT_TYPES,
-							SCOPES,
+							directoryInput.getContentTypes(),
+							directoryInput.getScopes(),
 							Format.DIRECTORY
 					);
 					FileUtils.copyDirectory(directoryInput.getFile(), output);
@@ -89,8 +90,8 @@ public class AspectJAndroidTransform extends Transform {
 				for (JarInput jarInput : input.getJarInputs()) {
 					File output = outputProvider.getContentLocation(
 							jarInput.getName(),
-							INPUT_TYPES,
-							SCOPES,
+							jarInput.getContentTypes(),
+							jarInput.getScopes(),
 							Format.JAR
 					);
 					FileUtils.copyFile(jarInput.getFile(), output);
@@ -121,8 +122,8 @@ public class AspectJAndroidTransform extends Transform {
 					classpathFiles.add(jarInput.getFile());
 					File output = outputProvider.getContentLocation(
 							jarInput.getName(),
-							INPUT_TYPES,
-							SCOPES,
+							jarInput.getContentTypes(),
+							jarInput.getScopes(),
 							Format.JAR
 					);
 					FileUtils.copyFile(jarInput.getFile(), output);
